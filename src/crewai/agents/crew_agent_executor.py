@@ -154,12 +154,11 @@ class CrewAgentExecutor(CrewAgentExecutorMixin):
 
                 enforce_rpm_limit(self.request_within_rpm_limit)
 
-                messages = self.messages 
+                messages = self.messages.copy()
                 if self.task.used_tools > 3:
-                    messages = [
-                        *self.messages,
-                        self._remember_format_message()
-                    ]
+                    messages.append(self._remember_format_message())
+                if len(messages) > 2:
+                    messages.append(self._continue_message())
 
                 answer = get_llm_response(
                     llm=self.llm,
@@ -473,3 +472,7 @@ class CrewAgentExecutor(CrewAgentExecutorMixin):
             tools=self.tools_description, tool_names=self.tools_names
         )
         return {"role": "assistant", "content": content}
+
+    def _continue_message(self) -> Dict[str, str]:
+        content = self._i18n.slice("continue")
+        return {"role": "user", "content": content}
