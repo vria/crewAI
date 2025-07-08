@@ -165,6 +165,7 @@ class CrewAgentExecutor(CrewAgentExecutorMixin):
                     messages=messages,
                     callbacks=self.callbacks,
                     printer=self._printer,
+                    from_task=self.task
                 )
                 formatted_answer = process_llm_response(answer, self.use_stop_words)
 
